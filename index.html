@@ -68,11 +68,11 @@ body::before{
 /* ปรากฏตอนโหลดหน้า: ไล่ทีละชิ้น ครั้งเดียวจบ */
 .rise{
   opacity:0;
-  transform:translateY(14px);
+  translate:0 14px;
   animation:rise .8s var(--ease) forwards;
   animation-delay:var(--d,0s);
 }
-@keyframes rise{to{opacity:1;transform:none}}
+@keyframes rise{to{opacity:1;translate:0 0}}
 
 /* ---------- หัวหน้า ---------- */
 .header{
@@ -132,7 +132,33 @@ body::before{
 }
 
 /* ---------- แถบหัวข้อแบบพับได้ ---------- */
-.section{margin-bottom:14px}
+/* กรอบห่อทั้ง section: หัวข้อกับเนื้อหาอยู่ในการ์ดใบเดียวกัน */
+.section{
+  position:relative;
+  margin-bottom:14px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:rgba(255,255,255,.09);
+  -webkit-backdrop-filter:blur(14px);
+          backdrop-filter:blur(14px);
+  box-shadow:0 14px 34px -22px rgba(2,10,28,.9);
+  overflow:hidden;
+  transition:background .35s var(--ease), border-color .35s var(--ease),
+             transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+
+.section:hover{
+  background:rgba(255,255,255,.13);
+  border-color:rgba(255,255,255,.3);
+  transform:translateY(-2px);
+  box-shadow:0 20px 40px -22px rgba(2,10,28,1);
+}
+
+.section:has(.dropdown-header[aria-expanded="true"]){
+  background:rgba(255,255,255,.15);
+  border-color:rgba(255,255,255,.34);
+  box-shadow:0 22px 44px -20px rgba(2,10,28,1);
+}
 
 .dropdown-header{
   position:relative;
@@ -147,15 +173,9 @@ body::before{
   text-align:left;
   color:var(--paper);
   cursor:pointer;
-  border:1px solid var(--line);
-  border-radius:20px;
-  background:rgba(255,255,255,.09);
-  -webkit-backdrop-filter:blur(14px);
-          backdrop-filter:blur(14px);
-  box-shadow:0 14px 34px -22px rgba(2,10,28,.9);
+  border:0;
+  background:transparent;
   overflow:hidden;
-  transition:background .35s var(--ease), border-color .35s var(--ease),
-             transform .35s var(--ease), border-radius .4s var(--ease);
 }
 /* แสงนุ่ม ๆ วิ่งตามเมาส์ */
 .dropdown-header::before{
@@ -166,18 +186,8 @@ body::before{
   opacity:0;
   transition:opacity .35s ease;
 }
-.dropdown-header:hover{
-  background:rgba(255,255,255,.14);
-  border-color:rgba(255,255,255,.3);
-  transform:translateY(-2px);
-}
 .dropdown-header:hover::before{opacity:1}
-.dropdown-header:active{transform:translateY(0) scale(.99)}
-.dropdown-header[aria-expanded="true"]{
-  border-radius:20px 20px 6px 6px;
-  background:rgba(255,255,255,.15);
-  border-color:rgba(255,255,255,.32);
-}
+.section:active{transform:translateY(0) scale(.995)}
 
 .icon{
   flex:none;
@@ -214,18 +224,28 @@ body::before{
   grid-template-rows:0fr;
   visibility:hidden;
   transition:grid-template-rows .45s var(--ease),
-             margin-top .45s var(--ease),
              visibility 0s linear .45s;
 }
-.dropdown-content > div{overflow:hidden}
+.dropdown-content > div{
+  position:relative;
+  overflow:hidden;
+  padding:0 14px;   /* เว้นเฉพาะแนวนอน แนวตั้งใช้ margin ของลิงก์ ไม่งั้นตอนพับจะเหลือช่องว่างค้าง */
+}
+/* เส้นคั่นระหว่างหัวข้อกับเนื้อหา */
+.dropdown-content > div::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:2px;
+  right:2px;
+  height:1px;
+  background:rgba(255,255,255,.16);
+}
 
 .dropdown-header[aria-expanded="true"] + .dropdown-content{
   grid-template-rows:1fr;
-  margin-top:6px;
   visibility:visible;
-  transition:grid-template-rows .5s var(--ease),
-             margin-top .45s var(--ease),
-             visibility 0s;
+  transition:grid-template-rows .5s var(--ease), visibility 0s;
 }
 
 .simple-btn{
@@ -249,7 +269,8 @@ body::before{
   transition:opacity .4s var(--ease), transform .4s var(--ease),
              background .25s ease, border-color .25s ease;
 }
-.simple-btn:last-child{margin-bottom:0}
+.simple-btn:first-child{margin-top:14px}
+.simple-btn:last-child{margin-bottom:16px}
 
 /* ไล่ปรากฏทีละปุ่มตอนกางออก */
 .dropdown-header[aria-expanded="true"] + .dropdown-content .simple-btn{
@@ -335,7 +356,9 @@ body::before{
   .title{font-size:20px}
   .logo{width:92px;height:92px}
   .logo-img{width:78px;height:78px}
+  .section{border-radius:22px}
   .dropdown-header{font-size:14.5px;padding:15px 16px;gap:12px}
+  .dropdown-content > div{padding:0 12px}
   .icon{width:35px;height:35px}
   .simple-btn{font-size:14px}
 }
@@ -347,7 +370,7 @@ body::before{
     animation-iteration-count:1 !important;
     transition-duration:.001s !important;
   }
-  .rise{opacity:1;transform:none}
+  .rise{opacity:1;translate:none}
 }
 </style>
 </head>
