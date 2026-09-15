@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.1.0",
   "url": "https://ritta-bim-center.github.io/ritta-revit-link-tree/",
   "notes": "RITTA pyRevit 2.1.0\n1.เพิ่มหน้าต่างแจ้งเตือนมีอัพเดต Version ใหม่\n2.เพิ่มตัวเลือก Publish Setting สำหรับ Export Tools",
   "mandatory": false
