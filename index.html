@@ -2,9 +2,9 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#071633">
-<title>RITTA's pyRevit Linktree</title>
+<title>RITTA BIM Linktree</title>
 
 <link rel="shortcut icon" href="./assets/BimCenter.png" type="image/x-icon" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@ body{
   min-height:100vh;
   display:flex;
   justify-content:center;
-  padding:56px 20px 72px;
+  padding:calc(56px + env(safe-area-inset-top,0px)) 20px calc(72px + env(safe-area-inset-bottom,0px));
   background:
     radial-gradient(120% 80% at 12% -10%, #1d5fbd 0%, transparent 55%),
     radial-gradient(110% 70% at 92% 8%, #0e7490 0%, transparent 50%),
@@ -65,10 +65,13 @@ body::before{
   max-width:440px;
 }
 
-/* ปรากฏตอนโหลดหน้า: ไล่ทีละชิ้น ครั้งเดียวจบ */
-.rise{
-  opacity:0;
-  translate:0 14px;
+/* ---------- ระบบหน้า: หน้าหลัก / pyRevit / RittaTools ---------- */
+.page{display:none}
+.page.is-active{display:block}
+
+/* ปรากฏตอนเข้าหน้า: ไล่ทีละชิ้น เล่นใหม่ทุกครั้งที่สลับหน้า */
+.rise{opacity:0;translate:0 14px}
+.page.is-active .rise{
   animation:rise .8s var(--ease) forwards;
   animation-delay:var(--d,0s);
 }
@@ -118,6 +121,23 @@ body::before{
   display:block;
 }
 
+/* สำรองไว้เผื่อไฟล์รูปไม่ถูกโหลด จะได้ไม่เห็นไอคอนรูปแตก */
+.logo-mark{
+  display:none;
+  position:relative;
+  z-index:1;
+  width:116px;
+  height:116px;
+  border-radius:50%;
+  place-items:center;
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:1px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+}
+.logo.is-fallback .logo-mark{display:grid}
+
 .title{
   font-size:23px;
   font-weight:700;
@@ -131,8 +151,124 @@ body::before{
   color:rgba(233,244,255,.72);
 }
 
+/* ---------- การ์ดทางแยกบนหน้าหลัก ---------- */
+.gateway{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:6px;
+}
+
+.gate{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  width:100%;
+  padding:26px 16px 22px;
+  font:inherit;
+  text-align:center;
+  color:var(--paper);
+  text-decoration:none;
+  cursor:pointer;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:rgba(255,255,255,.09);
+  -webkit-backdrop-filter:blur(14px);
+          backdrop-filter:blur(14px);
+  box-shadow:0 14px 34px -22px rgba(2,10,28,.9);
+  overflow:hidden;
+  transition:background .35s var(--ease), border-color .35s var(--ease),
+             transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.gate::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.16), transparent 62%);
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.gate:hover::before{opacity:1}
+.gate:hover{
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.3);
+  transform:translateY(-3px);
+  box-shadow:0 22px 44px -22px rgba(2,10,28,1);
+}
+.gate:active{transform:translateY(-1px) scale(.995)}
+
+.gate-icon{
+  position:relative;
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:58px;
+  height:58px;
+  font-size:26px;
+  border-radius:18px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.16);
+  transition:transform .45s var(--ease), background .35s ease;
+}
+.gate:hover .gate-icon{
+  transform:rotate(-6deg) scale(1.06);
+  background:rgba(56,189,248,.3);
+}
+
+.gate-body{position:relative;width:100%}
+.gate-title{display:block;font-size:16px;font-weight:700;letter-spacing:.2px}
+.gate-desc{
+  display:block;
+  margin-top:4px;
+  font-size:12.5px;
+  font-weight:400;
+  line-height:1.5;
+  color:rgba(233,244,255,.72);
+}
+
+.gate-go{
+  position:relative;
+  flex:none;
+  width:17px;
+  height:17px;
+  margin-top:auto;
+  opacity:.45;
+  transform:translateY(-4px);
+  transition:opacity .3s var(--ease), transform .3s var(--ease);
+}
+.gate:hover .gate-go,
+.gate:focus-visible .gate-go{opacity:.95;transform:none}
+
+/* ---------- ปุ่มย้อนกลับ ---------- */
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:22px;
+  padding:9px 16px 9px 12px;
+  font:inherit;
+  font-size:13.5px;
+  font-weight:500;
+  color:rgba(233,244,255,.85);
+  text-decoration:none;
+  cursor:pointer;
+  border:1px solid var(--line);
+  border-radius:50px;
+  background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px);
+          backdrop-filter:blur(10px);
+  transition:background .25s ease, border-color .25s ease, color .25s ease;
+}
+.back:hover{
+  background:rgba(255,255,255,.14);
+  border-color:rgba(255,255,255,.3);
+  color:var(--paper);
+}
+.back svg{width:15px;height:15px}
+
 /* ---------- แถบหัวข้อแบบพับได้ ---------- */
-/* กรอบห่อทั้ง section: หัวข้อกับเนื้อหาอยู่ในการ์ดใบเดียวกัน */
 .section{
   position:relative;
   margin-bottom:14px;
@@ -253,10 +389,13 @@ body::before{
   display:flex;
   align-items:center;
   gap:12px;
+  width:100%;
   padding:14px 16px;
   margin-bottom:8px;
+  font:inherit;
   font-size:14.5px;
   font-weight:500;
+  text-align:left;
   color:var(--paper);
   text-decoration:none;
   border:1px solid rgba(255,255,255,.13);
@@ -288,8 +427,30 @@ body::before{
 }
 .simple-btn:active{transform:scale(.985)}
 
+/* ปุ่มที่ยังไม่ได้ใส่ลิงก์ */
+.simple-btn.pending{
+  cursor:default;
+  color:rgba(233,244,255,.62);
+  border-style:dashed;
+  background:rgba(255,255,255,.04);
+}
+.simple-btn.pending:hover{
+  background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.22);
+}
+.simple-btn.pending:active{transform:none}
+.pending-tag{
+  flex:none;
+  padding:3px 9px;
+  font-size:11px;
+  font-weight:500;
+  border-radius:50px;
+  background:rgba(255,255,255,.1);
+  color:rgba(233,244,255,.7);
+}
+
 .btn-emoji{flex:none;font-size:16px}
-.btn-text{flex:1}
+.btn-text{flex:1;min-width:0}
 
 .go{
   flex:none;
@@ -361,16 +522,21 @@ body::before{
 
 /* ---------- จอเล็ก ---------- */
 @media (max-width:640px){
-  body{padding:40px 16px 56px}
+  body{padding:calc(40px + env(safe-area-inset-top,0px)) 16px calc(56px + env(safe-area-inset-bottom,0px))}
   .title{font-size:20px}
   .logo{width:116px;height:116px}
-  .logo-img{width:102px;height:102px}
+  .logo-img,.logo-mark{width:102px;height:102px}
   .section{border-radius:22px}
   .dropdown-header{font-size:14.5px;padding:15px 16px;gap:12px}
   .dropdown-content > div{padding:0 12px}
   .icon{width:35px;height:35px}
   .simple-btn{font-size:14px}
   .footer-logo{max-width:120px}
+  .gateway{gap:12px}
+  .gate{padding:22px 12px 18px;gap:12px;border-radius:22px}
+  .gate-icon{width:50px;height:50px;font-size:22px;border-radius:16px}
+  .gate-title{font-size:15px}
+  .gate-desc{font-size:12px}
 }
 
 /* ---------- เคารพการตั้งค่าลดการเคลื่อนไหว ---------- */
@@ -388,134 +554,322 @@ body::before{
 <body>
 <div class="container">
 
-  <!-- หัวหน้า -->
-  <header class="header rise" style="--d:.05s">
-    <div class="logo">
-      <img src="./assets/BimCenter.png" alt="โลโก้ RITTA BIM" class="logo-img" />
-    </div>
-    <h1 class="title">RITTA pyRevit</h1>
-    <p class="tagline">รวมลิงก์ติดตั้ง คู่มือ และเครื่องมือ BIM ไว้ที่เดียว</p>
-  </header>
+  <!-- ============================================================
+       หน้าที่ 1 : หน้าหลัก
+       ============================================================ -->
+  <div class="page is-active" id="page-home">
 
-  <!-- 1. การติดตั้ง -->
-  <section class="section rise" style="--d:.16s">
-    <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
-      <span class="icon">💼</span>
-      <span class="label">การติดตั้ง Add-in RITTA pyRevit</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="dropdown-content">
-      <div>
-        <a href="https://github.com/pyrevitlabs/pyRevit/releases" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🔗</span><span class="btn-text">ดาวน์โหลด pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a> 
-        <a href="https://rittacoth-my.sharepoint.com/:f:/g/personal/bimdata03_ritta_co_th/IgB-2YsQHpbGTIhMLgGVyNhRAQE8xgAdCvvYZlts5tOtUPU?e=UvWqVd" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🔗</span><span class="btn-text">ดาวน์โหลด Add-in RITTA pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>        
-        <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQAq-2zqzA1CQL5V3_G6UCwyASnYQN5uJGHKhyHwczGdcLg?e=ilEABl" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการติดตั้ง Add-in RITTA pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
+    <header class="header rise" style="--d:.05s">
+      <div class="logo">
+        <img src="./assets/BimCenter.png" alt="โลโก้ RITTA BIM" class="logo-img" onerror="markFallback(this)" />
+        <span class="logo-mark">BIM</span>
       </div>
-    </div>
-  </section>
+      <h1 class="title">RITTA BIM</h1>
+      <p class="tagline">เลือกหมวดเครื่องมือที่ต้องการใช้งาน</p>
+    </header>
 
-  <!-- 2. License -->
-  <section class="section rise" style="--d:.24s">
-    <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
-      <span class="icon">🔒</span>
-      <span class="label">การขอ License RITTA pyRevit</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="dropdown-content">
-      <div>        
-        <a href="https://rittatools.getgrist.com/forms/ttbETkjaYiZaECPzp7tP4v/41" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">📖</span><span class="btn-text">ฟอร์มลงทะเบียนขอรับ License RITTA pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-        <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQAobr2QYN1gT7ZzWlJTK8BGAXSB7uIDyfSY6AdkQv4RcME?e=zfSyMmt" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการขอ License RITTA pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
+    <nav class="gateway">
+      <a href="#pyrevit" class="gate rise" style="--d:.18s">
+        <span class="gate-icon">🧩</span>
+        <span class="gate-body">
+          <span class="gate-title">RITTA pyRevit</span>
+          <span class="gate-desc">ติดตั้ง Add-in ขอ License คู่มือ และ KPI Modeler</span>
+        </span>
+        <svg class="gate-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </a>
 
-  <!-- 3. เครื่องมือ -->
-  <section class="section rise" style="--d:.32s">
-    <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
-      <span class="icon">⚒️</span>
-      <span class="label">เครื่องมือ RITTA pyRevit</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="dropdown-content">
-      <div>
-        <a href="https://rittacoth-my.sharepoint.com/:f:/g/personal/bimdata03_ritta_co_th/IgAdR_cm_2uWRoFc_Gmcj6LzAcYymQ9ZqLd-xypvb4jjgbs?e=UvGaqT" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">📋</span><span class="btn-text">คู่มือการใช้งาน Add-in RITTA pyRevit</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-      </div>
+      <a href="#rittatools" class="gate rise" style="--d:.28s">
+        <span class="gate-icon">🛠️</span>
+        <span class="gate-body">
+          <span class="gate-title">RITTA Tools</span>
+          <span class="gate-desc">ชุดเครื่องมือและระบบข้อมูลของทีม BIM</span>
+        </span>
+        <svg class="gate-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </a>
+    </nav>
+
+    <div class="footer rise" style="--d:.4s">
+      <img src="./assets/logoRT.png" alt="โลโก้ RT" class="footer-logo" onerror="this.remove()" />
+      <a href="#" class="footer-btn">We make the impossible<strong>POSSIBLE</strong></a>
+      <p class="note">RITTA BIM Research &amp; Development</p>
     </div>
-  </section>
+
+  </div>
+
+
+  <!-- ============================================================
+       หน้าที่ 2 : RITTA pyRevit (เนื้อหาเดิมทั้งหมด)
+       ============================================================ -->
+  <div class="page" id="page-pyrevit">
+
+    <a href="#home" class="back rise" style="--d:.02s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      หน้าหลัก
+    </a>
+
+    <header class="header rise" style="--d:.05s">
+      <div class="logo">
+        <img src="./assets/BimCenter.png" alt="โลโก้ RITTA BIM" class="logo-img" onerror="markFallback(this)" />
+        <span class="logo-mark">BIM</span>
+      </div>
+      <h1 class="title">RITTA pyRevit</h1>
+      <p class="tagline">รวมลิงก์ติดตั้ง คู่มือ และเครื่องมือ BIM ไว้ที่เดียว</p>
+    </header>
+
+    <!-- 1. การติดตั้ง -->
+    <section class="section rise" style="--d:.16s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">💼</span>
+        <span class="label">การติดตั้ง Add-in RITTA pyRevit</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://github.com/pyrevitlabs/pyRevit/releases" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🔗</span><span class="btn-text">ดาวน์โหลด pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://rittacoth-my.sharepoint.com/:f:/g/personal/bimdata03_ritta_co_th/IgB-2YsQHpbGTIhMLgGVyNhRAQE8xgAdCvvYZlts5tOtUPU?e=UvWqVd" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🔗</span><span class="btn-text">ดาวน์โหลด Add-in RITTA pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQAq-2zqzA1CQL5V3_G6UCwyASnYQN5uJGHKhyHwczGdcLg?e=ilEABl" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการติดตั้ง Add-in RITTA pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. License -->
+    <section class="section rise" style="--d:.24s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">🔒</span>
+        <span class="label">การขอ License RITTA pyRevit</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://rittatools.getgrist.com/forms/ttbETkjaYiZaECPzp7tP4v/41" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">📖</span><span class="btn-text">ฟอร์มลงทะเบียนขอรับ License RITTA pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQAobr2QYN1gT7ZzWlJTK8BGAXSB7uIDyfSY6AdkQv4RcME?e=zfSyMmt" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการขอ License RITTA pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. เครื่องมือ -->
+    <section class="section rise" style="--d:.32s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">⚒️</span>
+        <span class="label">เครื่องมือ RITTA pyRevit</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://rittacoth-my.sharepoint.com/:f:/g/personal/bimdata03_ritta_co_th/IgAdR_cm_2uWRoFc_Gmcj6LzAcYymQ9ZqLd-xypvb4jjgbs?e=UvGaqT" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">📋</span><span class="btn-text">คู่มือการใช้งาน Add-in RITTA pyRevit</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
 
     <!-- 4. KPI -->
-  <section class="section rise" style="--d:.40s">
-    <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
-      <span class="icon">📊</span>
-      <span class="label">RITTA BQC - KPI Modeler</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="dropdown-content">
-      <div>
-        <a href="https://rittacoth.sharepoint.com/:b:/s/BIMResearchDevelopment/IQA9xpKXKfyLR4-I06y0O0aEAbO6m_omshwr-tdoJH-TyRk?e=fGwRO4" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">📩</span><span class="btn-text">KPI Modeler หัวข้อการตรวจ</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-        <a href="https://rittacoth.sharepoint.com/:p:/s/BIMResearchDevelopment/IQBme2H0UT4KRpc7UI9Zg_ovASLeVcPEJw5OW-5gjaxWFNw?e=gJpXFr" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🧩</span><span class="btn-text">การตรวจ KPI ด้วยตัวเอง(pyRevit+PowerBI)</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
-        <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQDk7T3aZThiRJYbs_vEQFnRAZXxsrr3oLQLgyZhTlCcoCw?e=tjI49q" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการตรวจ KPI ด้วยตัวเอง(pyRevit+PowerBI)</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
+    <section class="section rise" style="--d:.40s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">📊</span>
+        <span class="label">RITTA BQC - KPI Modeler</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://rittacoth.sharepoint.com/:b:/s/BIMResearchDevelopment/IQA9xpKXKfyLR4-I06y0O0aEAbO6m_omshwr-tdoJH-TyRk?e=fGwRO4" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">📩</span><span class="btn-text">KPI Modeler หัวข้อการตรวจ</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://rittacoth.sharepoint.com/:p:/s/BIMResearchDevelopment/IQBme2H0UT4KRpc7UI9Zg_ovASLeVcPEJw5OW-5gjaxWFNw?e=gJpXFr" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🧩</span><span class="btn-text">การตรวจ KPI ด้วยตัวเอง(pyRevit+PowerBI)</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://rittacoth-my.sharepoint.com/:v:/g/personal/bimdata03_ritta_co_th/IQDk7T3aZThiRJYbs_vEQFnRAZXxsrr3oLQLgyZhTlCcoCw?e=tjI49q" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการตรวจ KPI ด้วยตัวเอง(pyRevit+PowerBI)</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 5. Line OA -->
-  <section class="section rise" style="--d:.48s">
-    <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
-      <span class="icon">💬</span>
-      <span class="label">มีปัญหาการใช้งาน ติดต่อ Line OA</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-    </button>
-    <div class="dropdown-content">
-      <div>
-        <a href="https://line.me/R/ti/p/%40748afrxu?oat__id=1218305" target="_blank" rel="noopener" class="simple-btn">
-          <span class="btn-emoji">💬</span><span class="btn-text">เพิ่มเพื่อน Line Official</span>
-          <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-        </a>
+    <!-- 5. Line OA -->
+    <section class="section rise" style="--d:.48s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">💬</span>
+        <span class="label">มีปัญหาการใช้งาน ติดต่อ Line OA</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://line.me/R/ti/p/%40748afrxu?oat__id=1218305" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">💬</span><span class="btn-text">เพิ่มเพื่อน Line Official</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ท้ายหน้า -->
-  <div class="footer rise" style="--d:.58s">
-    <img src="./assets/logoRT.png" alt="โลโก้ RT" class="footer-logo" />
-    <a href="#" class="footer-btn">We make the impossible<strong>POSSIBLE</strong></a>
-    <p class="note">RITTA BIM Research &amp; Development</p>
+    <div class="footer rise" style="--d:.58s">
+      <img src="./assets/logoRT.png" alt="โลโก้ RT" class="footer-logo" onerror="this.remove()" />
+      <a href="#" class="footer-btn">We make the impossible<strong>POSSIBLE</strong></a>
+      <p class="note">RITTA BIM Research &amp; Development</p>
+    </div>
+
+  </div>
+
+
+  <!-- ============================================================
+       หน้าที่ 3 : RittaTools  (หน้าใหม่ — แก้ลิงก์ในนี้ได้เลย)
+       ============================================================ -->
+  <div class="page" id="page-rittatools">
+
+    <a href="#home" class="back rise" style="--d:.02s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      หน้าหลัก
+    </a>
+
+    <header class="header rise" style="--d:.05s">
+      <div class="logo">
+        <img src="./assets/BimCenter.png" alt="โลโก้ RITTA BIM" class="logo-img" onerror="markFallback(this)" />
+        <span class="logo-mark">BIM</span>
+      </div>
+      <h1 class="title">RittaTools</h1>
+      <p class="tagline">รวมลิงก์เครื่องมือและระบบข้อมูลของทีม BIM</p>
+    </header>
+
+    <!-- 1. เริ่มต้นใช้งาน -->
+    <section class="section rise" style="--d:.16s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">💼</span>
+        <span class="label">การติดตั้งและเริ่มต้นใช้งาน RittaTools</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <button type="button" class="simple-btn pending">
+            <span class="btn-emoji">🔗</span><span class="btn-text">ดาวน์โหลด RittaTools</span>
+            <span class="pending-tag">ใส่ลิงก์</span>
+          </button>
+          <button type="button" class="simple-btn pending">
+            <span class="btn-emoji">🎥</span><span class="btn-text">วิดีโอการติดตั้ง RittaTools</span>
+            <span class="pending-tag">ใส่ลิงก์</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. บัญชีผู้ใช้ / สิทธิ์ -->
+    <section class="section rise" style="--d:.24s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">🔒</span>
+        <span class="label">การขอสิทธิ์เข้าใช้งาน RittaTools</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <button type="button" class="simple-btn pending">
+            <span class="btn-emoji">📖</span><span class="btn-text">ฟอร์มลงทะเบียนขอสิทธิ์เข้าใช้งาน</span>
+            <span class="pending-tag">ใส่ลิงก์</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. เครื่องมือและคู่มือ -->
+    <section class="section rise" style="--d:.32s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">⚒️</span>
+        <span class="label">เครื่องมือและคู่มือ RittaTools</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <button type="button" class="simple-btn pending">
+            <span class="btn-emoji">📋</span><span class="btn-text">คู่มือการใช้งาน RittaTools</span>
+            <span class="pending-tag">ใส่ลิงก์</span>
+          </button>
+          <button type="button" class="simple-btn pending">
+            <span class="btn-emoji">🧩</span><span class="btn-text">รายการเครื่องมือทั้งหมด</span>
+            <span class="pending-tag">ใส่ลิงก์</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. ติดต่อ -->
+    <section class="section rise" style="--d:.40s">
+      <button class="dropdown-header" aria-expanded="false" onclick="toggleDropdown(this)">
+        <span class="icon">💬</span>
+        <span class="label">มีปัญหาการใช้งาน ติดต่อ Line OA</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-content">
+        <div>
+          <a href="https://line.me/R/ti/p/%40748afrxu?oat__id=1218305" target="_blank" rel="noopener" class="simple-btn">
+            <span class="btn-emoji">💬</span><span class="btn-text">เพิ่มเพื่อน Line Official</span>
+            <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer rise" style="--d:.5s">
+      <img src="./assets/logoRT.png" alt="โลโก้ RT" class="footer-logo" onerror="this.remove()" />
+      <a href="#" class="footer-btn">We make the impossible<strong>POSSIBLE</strong></a>
+      <p class="note">RITTA BIM Research &amp; Development</p>
+    </div>
+
   </div>
 
 </div>
 
 <script>
+/* ---------- สลับหน้าด้วย hash: ปุ่ม Back ของเบราว์เซอร์ใช้ได้ ---------- */
+const PAGES = ['home', 'pyrevit', 'rittatools'];
+
+function showPage(name){
+  if(!PAGES.includes(name)) name = 'home';
+
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('is-active', p.id === 'page-' + name);
+  });
+
+  /* ปิดหัวข้อที่กางค้างไว้ เวลากลับเข้ามาใหม่จะได้เริ่มที่สภาพเดิม */
+  document.querySelectorAll('.dropdown-header').forEach(h => {
+    h.setAttribute('aria-expanded', 'false');
+  });
+
+  window.scrollTo({top:0, behavior:'instant'});
+  document.title = name === 'rittatools' ? "RittaTools | RITTA BIM"
+                 : name === 'pyrevit'    ? "RITTA pyRevit | RITTA BIM"
+                 : "RITTA BIM Linktree";
+}
+
+function route(){
+  showPage((location.hash || '#home').slice(1));
+}
+
+window.addEventListener('hashchange', route);
+route();
+
+/* ---------- เปิด-ปิดหัวข้อ (ครั้งละหนึ่งหัวข้อ) ---------- */
 function toggleDropdown(header){
   const isOpen = header.getAttribute('aria-expanded') === 'true';
+  const page = header.closest('.page') || document;
 
-  document.querySelectorAll('.dropdown-header').forEach(h => {
+  page.querySelectorAll('.dropdown-header').forEach(h => {
     h.setAttribute('aria-expanded', 'false');
   });
 
@@ -524,14 +878,20 @@ function toggleDropdown(header){
   }
 }
 
-/* แสงนุ่มวิ่งตามเมาส์บนแถบหัวข้อ */
-document.querySelectorAll('.dropdown-header').forEach(h => {
-  h.addEventListener('pointermove', e => {
-    const r = h.getBoundingClientRect();
-    h.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-    h.style.setProperty('--my', (e.clientY - r.top) + 'px');
+/* ---------- แสงนุ่มวิ่งตามเมาส์ ---------- */
+document.querySelectorAll('.dropdown-header, .gate').forEach(el => {
+  el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
   });
 });
+
+/* ---------- เผื่อไฟล์โลโก้โหลดไม่ขึ้น ---------- */
+function markFallback(img){
+  img.parentElement.classList.add('is-fallback');
+  img.remove();
+}
 </script>
 </body>
 </html>
